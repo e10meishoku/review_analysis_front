@@ -1,26 +1,75 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* --- Tailwind v4 ユーティリティ用 (bg-xxx, text-xxx で使う色) --- */
+  /* ここに直接色を書くことで、ビルドエラーを防ぎます */
+  --color-background: #f4f8fb;
+  --color-foreground: #121212;
+
+  --color-primary: #dff347;
+  --color-primary-foreground: #121212;
+
+  --color-secondary: #e2e8f0;
+  --color-secondary-foreground: #121212;
+
+  --color-accent: #f4f9c3;
+  --color-accent-foreground: #121212;
+
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-success: #6cc398;
+
+  --color-sidebar: #121212;
+  --color-sidebar-foreground: #f4f8fb;
+  --color-sidebar-primary: #dff347;
+  --color-sidebar-accent: #1e1e1e;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #121212;
+
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #dff347;
+
+  /* チャート用 */
+  --color-chart-1: #dff347;
+  --color-chart-2: #6cc398;
+
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* shadcn/uiのコンポーネントが内部的に参照する変数を維持 */
+  --background: #f4f8fb;
+  --foreground: #121212;
+  --primary: #dff347;
+  --primary-foreground: #121212;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #121212;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f4f9c3;
+  --accent-foreground: #121212;
+  --success: #6cc398;
+  --sidebar: #121212;
+  --sidebar-foreground: #f4f8fb;
+  --border: #e2e8f0;
+  --radius: 0.625rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
 }

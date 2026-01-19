@@ -136,7 +136,7 @@ npm run build
 ```bash
 git add .
 git commit -m "feat: add review list page"
-git push origin main
+git push origin main #mainブランチに直接プッシュは禁止です
 ```
 
 ## バックエンド連携

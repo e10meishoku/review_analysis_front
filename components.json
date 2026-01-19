@@ -4,13 +4,12 @@
   "rsc": true,
   "tsx": true,
   "tailwind": {
-    "config": "",
+    "config": "tailwind.config.ts",
     "css": "app/globals.css",
     "baseColor": "slate",
     "cssVariables": true,
     "prefix": ""
   },
-  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
@@ -18,9 +17,5 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {
-    "default": "https://ui.shadcn.com/registry/{name}.json",
-    "blocks": "https://ui.shadcn.com/registry/blocks/{name}.json",
-    "magic": "https://magicui.design/registry/{name}.json"
-  }
+  "iconLibrary": "lucide"
 }

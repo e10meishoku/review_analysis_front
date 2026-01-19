@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 export function KpiSection() {
   const kpis = [
     { label: "口コミ件数", val: "3,240", trend: "+20%", sub: "from last month", icon: MessageCircle },
-    { label: "平均評価", val: "4.72", trend: "+10%", sub: "from last month", icon: Star },
+    { label: "平均評価", val: "5.55", trend: "+10%", sub: "from last month", icon: Star },
     { label: "平均年齢", val: "35.8", trend: "+40%", sub: "from last month", icon: Users },
   ]
 

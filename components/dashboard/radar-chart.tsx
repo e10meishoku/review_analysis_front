@@ -1,7 +1,6 @@
-// components/dashboard/radar-chart.tsx
 "use client"
 
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts"
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 
 const chartData = [
@@ -22,9 +21,10 @@ const chartConfig = {
 
 export function DashboardRadarChart() {
   return (
-    <div className="w-full h-full min-h-0">
-      <ChartContainer config={chartConfig} className="w-full h-full">
-        <RadarChart data={chartData} outerRadius="70%">
+    <div className="w-full h-full min-h-0 flex items-center justify-center">
+      <ChartContainer config={chartConfig} className="w-full h-full max-h-[300px]">
+        {/* outerRadiusを80%に拡大して余白を削減 */}
+        <RadarChart data={chartData} outerRadius="80%">
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
           <PolarAngleAxis dataKey="subject" className="text-xs font-bold" />
           <PolarGrid />

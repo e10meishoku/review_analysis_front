@@ -11,18 +11,31 @@ import { DashboardDonutChart } from "@/components/dashboard/donut-chart"
 import { DashboardBenefitsChart } from "@/components/dashboard/benefits-chart"
 import { DashboardIssuesChart } from "@/components/dashboard/issues-chart"
 
+
 export default function DashboardPage() {
+  // ■ 将来的なAPIデータ取得を想定したダミーデータ
+  // バックエンド接続時はここを fetch('/api/dashboard/kpi') などに置き換えます
+  const kpiDummyData = {
+    review_count: 3240,
+    review_count_trend: 20,
+    average_rating: 5.55,
+    average_rating_trend: 10,
+    average_age: 35.8,
+    average_age_trend: 40,
+  }
+
   const rowHeight = "xl:h-[320px]"
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-[1620px] mx-auto pb-8 px-6">
+    <div className="flex flex-col gap-8 w-full max-w-[1620px] mx-auto pb-8 px-6 pt-6">
       
       {/* 
          1行目: KPI (2/3) : Buyer Satisfaction (1/3) 
       */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
         <div className="xl:col-span-2 h-full min-h-[300px] bg-white rounded-[2rem] p-6 shadow-sm flex flex-col overflow-hidden">
-            <KpiSection />
+            {/* ここでデータを渡します */}
+            <KpiSection data={kpiDummyData} />
         </div>
         <div className="xl:col-span-1 h-full min-h-[300px]">
              <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
@@ -77,9 +90,6 @@ export default function DashboardPage() {
                  <div>
                     <h3 className="font-bold text-sm">件数と評価の推移</h3>
                  </div>
-                 <div className="bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                    250 Buyer
-                 </div>
              </div>
              <div className="flex-1 min-h-0 w-full">
                 <DashboardTrendChart />
@@ -92,7 +102,7 @@ export default function DashboardPage() {
       */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
         
-        {/* 左: AI分類スコア (修正: 中央寄せ・黒文字化) */}
+        {/* 左: AI分類スコア */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">AI分類スコア</h3>
              <div className="flex-1 w-full min-h-0">
@@ -108,7 +118,7 @@ export default function DashboardPage() {
              </div>
         </div>
 
-        {/* 右: リピート意欲 (修正: 中央寄せ) */}
+        {/* 右: リピート意欲 */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">リピート意欲</h3>
              <div className="flex-1 w-full min-h-0">

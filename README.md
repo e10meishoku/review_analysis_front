@@ -80,10 +80,52 @@ review_analysis_front/
 │   ├── layout.tsx                  # ルートレイアウト
 │   ├── page.tsx                    # ホームページ
 │   ├── globals.css                 # グローバルスタイル
+│   ├── favicon.ico                 # ファビコン
+│   ├── analysis/                   # 分析ページ
+│   │   └── age/                    # 年齢分析ページ
+│   │       └── page.tsx
+│   ├── dashboard/                  # ダッシュボード
+│   │   ├── layout.tsx              # ダッシュボードレイアウト
+│   │   └── page.tsx                # ダッシュボードページ
 │   └── design-system/              # デザインシステムページ
 │       └── page.tsx
-├── lib/
-│   └── utils.ts                    # ユーティリティ関数
+├── components/                     # React コンポーネント
+│   ├── app-header.tsx              # アプリヘッダー
+│   ├── app-sidebar.tsx             # アプリサイドバー
+│   ├── header-filters.tsx          # ヘッダーフィルター
+│   ├── dashboard/                  # ダッシュボード関連コンポーネント
+│   │   ├── age-bar-chart.tsx
+│   │   ├── age-distribution.tsx
+│   │   ├── benefits-chart.tsx
+│   │   ├── donut-chart.tsx
+│   │   ├── issues-chart.tsx
+│   │   ├── kpi-section.tsx
+│   │   ├── product-type-chart.tsx
+│   │   ├── radar-chart.tsx
+│   │   ├── rating-distribution.tsx
+│   │   ├── skin-distribution.tsx
+│   │   └── trend-chart.tsx
+│   └── ui/                         # UI コンポーネント（ShadcnUI等）
+│       ├── avatar.tsx
+│       ├── breadcrumb.tsx
+│       ├── button.tsx
+│       ├── calendar.tsx
+│       ├── card.tsx
+│       ├── chart.tsx
+│       ├── command.tsx
+│       ├── dialog.tsx
+│       ├── input.tsx
+│       ├── popover.tsx
+│       ├── select.tsx
+│       ├── separator.tsx
+│       ├── sheet.tsx
+│       ├── sidebar.tsx
+│       ├── skeleton.tsx
+│       └── tooltip.tsx
+├── hooks/                          # React カスタムフック
+│   └── use-mobile.tsx              # モバイル判定フック
+├── lib/                            # ユーティリティ関数
+│   └── utils.ts                    # クラス名・型ユーティリティ
 ├── public/                         # 静的ファイル
 ├── components.json                 # UI フレームワーク設定
 ├── next.config.ts                  # Next.js 設定

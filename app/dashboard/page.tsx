@@ -1,4 +1,9 @@
-// app/dashboard/page.tsx
+// review_analysis_front/app/dashboard/page.tsx
+
+// 作成したAPIクライアント関数をインポート
+import { fetchKpiData } from "@/lib/api-client"
+
+// 各種チャートコンポーネントのインポート
 import { KpiSection } from "@/components/dashboard/kpi-section"
 import { DashboardAgeBarChart } from "@/components/dashboard/age-bar-chart"
 import { DashboardAgeDistribution } from "@/components/dashboard/age-distribution"
@@ -11,19 +16,29 @@ import { DashboardDonutChart } from "@/components/dashboard/donut-chart"
 import { DashboardBenefitsChart } from "@/components/dashboard/benefits-chart"
 import { DashboardIssuesChart } from "@/components/dashboard/issues-chart"
 
+// ■ 追加: Next.js 15では URLパラメータ(searchParams) は Promise型として受け取ります
+interface DashboardPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
-export default function DashboardPage() {
-  // ■ 将来的なAPIデータ取得を想定したダミーデータ
-  // バックエンド接続時はここを fetch('/api/dashboard/kpi') などに置き換えます
-  const kpiDummyData = {
-    review_count: 3240,
-    review_count_trend: 20,
-    average_rating: 5.55,
-    average_rating_trend: 10,
-    average_age: 35.8,
-    average_age_trend: 40,
+// ■ 変更: 引数に props を追加
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+
+  // ■ 追加: URLパラメータが解決されるのを待ちます
+  const params = await searchParams
+
+  // ■ 追加: APIに渡すためのフィルター条件を作ります
+  // URLに ?manufacturer=XXX とあれば、それを取得します
+  const filter = {
+    manufacturer_name: typeof params.manufacturer === 'string' ? params.manufacturer : undefined,
+    product_name: typeof params.product === 'string' ? params.product : undefined,
   }
 
+  // ■ 変更: fetchKpiData にフィルター条件(filter)を渡します
+  // これでバックエンドに「明色化粧品のデータだけちょうだい」とリクエストが飛びます
+  const kpiData = await fetchKpiData(filter)
+
+  // レイアウト用の高さ設定
   const rowHeight = "xl:h-[320px]"
 
   return (
@@ -34,8 +49,12 @@ export default function DashboardPage() {
       */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
         <div className="xl:col-span-2 h-full min-h-[300px] bg-white rounded-[2rem] p-6 shadow-sm flex flex-col overflow-hidden">
-            {/* ここでデータを渡します */}
-            <KpiSection data={kpiDummyData} />
+            {/* 
+                取得したデータを渡します。
+                もしデータ取得失敗(null)の場合は undefined を渡し、
+                KpiSection側で「-」が表示されるようにします。
+            */}
+            <KpiSection data={kpiData || undefined} />
         </div>
         <div className="xl:col-span-1 h-full min-h-[300px]">
              <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">

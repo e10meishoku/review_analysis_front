@@ -1,3 +1,4 @@
+// components/dashboard/age-distribution.tsx
 "use client"
 
 import * as React from "react"

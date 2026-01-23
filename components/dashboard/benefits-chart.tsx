@@ -1,3 +1,4 @@
+// components/dashboard/benefits-chart.tsx
 "use client"
 
 import { Bar, BarChart, XAxis, YAxis, LabelList, CartesianGrid } from "recharts"

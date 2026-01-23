@@ -1,3 +1,4 @@
+// components/dashboard/kpi-section.tsx
 "use client"
 
 import { Card } from "@/components/ui/card"

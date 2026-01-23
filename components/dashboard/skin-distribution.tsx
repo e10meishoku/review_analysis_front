@@ -1,3 +1,4 @@
+// components/dashboard/skin-distribution.tsx
 "use client"
 
 import * as React from "react"

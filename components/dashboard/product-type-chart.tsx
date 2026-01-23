@@ -1,3 +1,4 @@
+// components/dashboard/product-type-chart.tsx
 "use client"
 
 import * as React from "react"

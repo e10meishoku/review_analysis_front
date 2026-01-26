@@ -67,23 +67,50 @@ export function KpiSection({ data }: KpiSectionProps) {
           <Card key={i} className="border-none shadow-xl rounded-[1.5rem] flex flex-col h-full overflow-hidden">
             
             {/* 上部: 黒いエリア */}
-            <div className="bg-[#121212] text-white p-7 flex-1 flex flex-col justify-center relative">
-              <ArrowUpRight className="absolute top-7 right-7 h-6 w-6 text-gray-500" />
+            {/* 
+               修正ポイント: paddingをレスポンシブ対応に変更
+               - p-4: モバイル・ノートPCなど狭い画面用
+               - xl:p-7: 1620px以上の広い画面用
+            */}
+            <div className="bg-[#121212] text-white p-4 xl:p-7 flex-1 flex flex-col justify-center relative">
+              <ArrowUpRight className="absolute top-4 right-4 xl:top-7 xl:right-7 h-5 w-5 xl:h-6 xl:w-6 text-gray-500" />
               
-              <div className="flex items-center gap-5">
-                <div className="bg-white rounded-full h-14 w-14 flex items-center justify-center shrink-0">
-                   <kpi.icon className="h-7 w-7 fill-black text-black" />
+              <div className="flex items-center gap-3 xl:gap-5">
+                {/* 
+                   修正ポイント: アイコンの背景サイズをレスポンシブ対応
+                   - h-10 w-10: ノートPC用
+                   - xl:h-14 xl:w-14: デスクトップ用
+                */}
+                <div className="bg-white rounded-full h-10 w-10 xl:h-14 xl:w-14 flex items-center justify-center shrink-0">
+                   {/* アイコン自体のサイズも調整 */}
+                   <kpi.icon className="h-5 w-5 xl:h-7 xl:w-7 fill-black text-black" />
                 </div>
-                <div className="flex flex-col">
-                   <span className="text-4xl font-extrabold tracking-tight leading-none">{kpi.val}</span>
-                   <span className="text-sm text-gray-400 font-bold mt-1.5">{kpi.label}</span>
+                
+                {/* 文字情報のコンテナ */}
+                <div className="flex flex-col min-w-0">
+                   {/* 
+                      修正ポイント: フォントサイズをレスポンシブ対応
+                      - text-2xl: モバイル
+                      - lg:text-3xl: ノートPC (ここで見切れを防ぐ)
+                      - xl:text-4xl: デスクトップ (元のサイズ)
+                      - truncateは削除しました
+                   */}
+                   <span className="text-2xl lg:text-3xl xl:text-3.5xl font-extrabold tracking-tight leading-none whitespace-nowrap">
+                     {kpi.val}
+                   </span>
+                   
+                   {/* ラベルのサイズも微調整 */}
+                   <span className="text-[10px] lg:text-xs xl:text-sm text-gray-400 font-bold mt-1 xl:mt-1.5 whitespace-nowrap">
+                     {kpi.label}
+                   </span>
                 </div>
               </div>
             </div>
             
             {/* 下部: ライム色の帯 */}
-            <div className="bg-[#DFF347] px-7 py-5 flex items-center">
-               <div className="bg-[#5EEAD4] text-[#121212] text-xs font-bold px-4 py-2 rounded-full inline-block">
+            {/* こちらもpaddingを調整して高さを抑える */}
+            <div className="bg-[#DFF347] px-4 py-3 xl:px-7 xl:py-5 flex items-center justify-center shrink-0">
+               <div className="bg-[#5EEAD4] text-[#121212] text-[10px] xl:text-xs font-bold px-3 py-1.5 xl:px-4 xl:py-2 rounded-full inline-block whitespace-nowrap">
                  {kpi.trend} {kpi.sub}
                </div>
             </div>

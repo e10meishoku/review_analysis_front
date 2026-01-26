@@ -1,7 +1,7 @@
 // review_analysis_front/lib/api-client.ts
 
 import { KpiMetrics } from "@/components/dashboard/kpi-section"
-import { MOCK_KPI_DATA } from "./mock-data"
+import { MOCK_DASHBOARD_DATA } from "./mock-data" // MOCK定数名を変更しています(後述)
 
 export interface DashboardFilter {
   manufacturer_name?: string
@@ -14,6 +14,23 @@ export interface DashboardFilter {
 export interface FilterOptions {
   manufacturers: string[]
   products: string[]
+}
+
+// ▼▼▼ 追加: グラフデータの型定義 ▼▼▼
+export interface ChartItem {
+  label: string
+  count: number
+  fill?: string // 色指定用
+}
+
+// ▼▼▼ 追加: ダッシュボード全体のレスポンス型 ▼▼▼
+export interface DashboardResponse {
+  kpi: KpiMetrics
+  distributions: {
+    skin: ChartItem[]
+    rating: ChartItem[]
+    age: ChartItem[]
+  }
 }
 
 // ▼▼▼ 追加: 選択肢リストを取得する関数 ▼▼▼
@@ -49,13 +66,14 @@ export async function fetchFilterOptions(manufacturer_name?: string): Promise<Fi
   }
 }
 
-// 既存の fetchKpiData はそのまま...
-export async function fetchKpiData(filter?: DashboardFilter): Promise<KpiMetrics | null> {
-    // ... (既存のコードそのまま)
+// ▼ 変更: 戻り値を DashboardResponse に変更
+export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardResponse | null> {
+    
+    // モックモード
     if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
         console.log("🛠️ Mock Mode: Returning dummy data (Filter ignored in mock)", filter)
         await new Promise((resolve) => setTimeout(resolve, 500))
-        return MOCK_KPI_DATA
+        return MOCK_DASHBOARD_DATA // 型エラー防止のため、mock-data.ts も後で更新してください
     }
 
     try {
@@ -76,7 +94,7 @@ export async function fetchKpiData(filter?: DashboardFilter): Promise<KpiMetrics
         const queryString = params.toString()
         const endpoint = `${apiUrl}/api/dashboard/kpi${queryString ? `?${queryString}` : ""}`
         
-        console.log(`Fetching KPI data from: ${endpoint}`)
+        console.log(`Fetching Dashboard data from: ${endpoint}`)
 
         const res = await fetch(endpoint, { cache: "no-store" })
 

@@ -34,9 +34,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     product_name: typeof params.product === 'string' ? params.product : undefined,
   }
 
-  // ■ 変更: fetchKpiData にフィルター条件(filter)を渡します
-  // これでバックエンドに「明色化粧品のデータだけちょうだい」とリクエストが飛びます
-  const kpiData = await fetchKpiData(filter)
+  // ■ 変更: fetchKpiData は DashboardResponse 型を返すようになりました
+  const dashboardData = await fetchKpiData(filter)
+  
+  // KPIデータとグラフデータを安全に取り出します
+  const kpiData = dashboardData?.kpi
+  const distData = dashboardData?.distributions
 
   // レイアウト用の高さ設定
   const rowHeight = "xl:h-[320px]"
@@ -60,6 +63,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
              <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
                  <h3 className="font-bold text-sm mb-4">年代別平均評価</h3>
                  <div className="flex-1 min-h-0 w-full">
+                    {/* ※ここはまだダミーのままです（次のステップで対応） */}
                     <DashboardAgeBarChart />
                  </div>
                  <div className="flex gap-4 mt-2 text-[10px] font-bold">
@@ -79,7 +83,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">年代構成比</h3>
             <div className="flex-1 w-full min-h-0">
-                <DashboardAgeDistribution />
+                {/* ▼ データを渡す */}
+                <DashboardAgeDistribution data={distData?.age || []} />
             </div>
         </div>
 
@@ -87,7 +92,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">評価点数分布</h3>
             <div className="flex-1 w-full min-h-0">
-                <DashboardRatingDistribution />
+                {/* ▼ データを渡す */}
+                <DashboardRatingDistribution data={distData?.rating || []} />
             </div>
         </div>
 
@@ -95,7 +101,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">肌質構成比</h3>
             <div className="flex-1 w-full min-h-0">
-                <DashboardSkinDistribution />
+                {/* ▼ データを渡す */}
+                <DashboardSkinDistribution data={distData?.skin || []} />
             </div>
         </div>
       </div>

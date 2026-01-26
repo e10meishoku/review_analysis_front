@@ -27,6 +27,7 @@ export interface TrendItem {
   average_rating: number
 }
 
+// ▼▼▼ 追加: benefits と issues を定義 ▼▼▼
 export interface DashboardResponse {
   kpi: KpiMetrics
   distributions: {
@@ -39,12 +40,13 @@ export interface DashboardResponse {
   repurchase: ChartItem[]
   age_rating: ChartItem[]
   trend: TrendItem[]
+  benefits: ChartItem[]
+  issues: ChartItem[]
 }
 
-// ▼▼▼ 追加: 日付フォーマットを YYYY-MM-DD に統一するヘルパー関数 ▼▼▼
+// 日付フォーマットヘルパー
 function formatDateStr(dateStr?: string): string | undefined {
   if (!dateStr) return undefined
-  // スラッシュをハイフンに置換
   return dateStr.replace(/\//g, "-")
 }
 
@@ -82,7 +84,7 @@ export async function fetchFilterOptions(manufacturer_name?: string): Promise<Fi
 export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardResponse | null> {
     
     if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
-        console.log("🛠️ Mock Mode: Returning dummy data (Filter ignored in mock)", filter)
+        console.log("🛠️ Mock Mode: Returning dummy data", filter)
         await new Promise((resolve) => setTimeout(resolve, 500))
         return MOCK_DASHBOARD_DATA
     }
@@ -102,16 +104,11 @@ export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardR
             params.append("product_name", filter.product_name)
         }
         
-        // ▼ 修正: 日付フォーマットを変換してからパラメータにセット
         const formattedStart = formatDateStr(filter?.start_date)
         const formattedEnd = formatDateStr(filter?.end_date)
         
-        if (formattedStart) {
-            params.append("start_date", formattedStart)
-        }
-        if (formattedEnd) {
-            params.append("end_date", formattedEnd)
-        }
+        if (formattedStart) params.append("start_date", formattedStart)
+        if (formattedEnd) params.append("end_date", formattedEnd)
 
         const queryString = params.toString()
         const endpoint = `${apiUrl}/api/dashboard/kpi${queryString ? `?${queryString}` : ""}`
@@ -121,10 +118,8 @@ export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardR
         const res = await fetch(endpoint, { cache: "no-store" })
 
         if (!res.ok) {
-            console.error(`API Error: ${res.status} ${res.statusText}`)
-            // エラー時でもnullを返すと画面が壊れる場合があるので、ログを出してnullを返す
             const errorText = await res.text()
-            console.error("Error details:", errorText)
+            console.error("API Error details:", errorText)
             return null
         }
         return res.json()

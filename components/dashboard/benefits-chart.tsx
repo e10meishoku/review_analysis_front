@@ -3,14 +3,12 @@
 
 import { Bar, BarChart, XAxis, YAxis, LabelList, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { ChartItem } from "@/lib/api-client" // 型をインポート
 
-const chartData = [
-  { benefit: "保湿力が高い", count: 85 },
-  { benefit: "香りが良い", count: 72 },
-  { benefit: "肌馴染み", count: 68 },
-  { benefit: "トーンアップ", count: 45 },
-  { benefit: "低刺激", count: 42 },
-]
+// ▼ Props定義
+interface Props {
+  data: ChartItem[]
+}
 
 // 背景がライム色になる想定なので、バーの色は黒にします
 const chartConfig = {
@@ -20,25 +18,31 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function DashboardBenefitsChart() {
+export function DashboardBenefitsChart({ data }: Props) {
+  
+  if (!data || data.length === 0) {
+    return <div className="flex items-center justify-center h-full text-black/50 text-xs font-bold">No Data</div>
+  }
+
   return (
     <div className="w-full h-full min-h-0">
       <ChartContainer config={chartConfig} className="w-full h-full">
+        {/* layout="vertical" で横棒グラフにします */}
         <BarChart
           accessibilityLayer
-          data={chartData}
+          data={data}
           layout="vertical"
           margin={{ left: 0, right: 20, top: 0, bottom: 0 }}
         >
           <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
           <YAxis
-            dataKey="benefit"
+            dataKey="label" // ここに単語が入る
             type="category"
             tickLine={false}
             axisLine={false}
-            width={80}
+            width={80} // ラベルの幅を確保
             className="text-xs font-bold"
-            tick={{ fill: '#121212' }} // 黒文字
+            tick={{ fill: '#121212' }} 
           />
           <XAxis type="number" hide />
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
@@ -50,4 +54,4 @@ export function DashboardBenefitsChart() {
       </ChartContainer>
     </div>
   )
-}   
+}

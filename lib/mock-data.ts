@@ -2,8 +2,6 @@
 
 import { DashboardResponse } from "./api-client"
 
-// APIがまだない時や、開発中に使うダミーデータです
-// DashboardResponse型に合わせて構造を変更しました
 export const MOCK_DASHBOARD_DATA: DashboardResponse = {
   kpi: {
     review_count: 3240,
@@ -37,26 +35,17 @@ export const MOCK_DASHBOARD_DATA: DashboardResponse = {
         { label: "60代以上", count: 150 },
     ]
   },
-  // Step 3用のダミーデータ
   radar: [
-    { label: "効果実感", count: 80 }, 
-    { label: "パッケージ", count: 65 },
-    { label: "使用感", count: 70 }, 
-    { label: "再購入", count: 85 },
-    { label: "香り", count: 60 }, 
-    { label: "コスパ", count: 50 },
+    { label: "効果実感", count: 80 }, { label: "パッケージ", count: 65 },
+    { label: "使用感", count: 70 }, { label: "再購入", count: 85 },
+    { label: "香り", count: 60 }, { label: "コスパ", count: 50 },
   ],
   product_type: [
-    { label: "購入品", count: 65 }, 
-    { label: "リピート", count: 25 }, 
-    { label: "モニター", count: 10 }
+    { label: "購入品", count: 65 }, { label: "リピート", count: 25 }, { label: "モニター", count: 10 }
   ],
   repurchase: [
-    { label: "リピートしたい", count: 75 }, 
-    { label: "分からない", count: 15 }, 
-    { label: "しない", count: 10 }
+    { label: "リピートしたい", count: 75 }, { label: "分からない", count: 15 }, { label: "しない", count: 10 }
   ],
-  // ▼▼▼ 追加: Step 4用のダミーデータ ▼▼▼
   age_rating: [
     { label: "20代以下", count: 5.2 },
     { label: "30代", count: 4.8 },
@@ -70,5 +59,20 @@ export const MOCK_DASHBOARD_DATA: DashboardResponse = {
     { date: "2025-01-03", review_count: 8, average_rating: 4.2 },
     { date: "2025-01-04", review_count: 20, average_rating: 5.0 },
     { date: "2025-01-05", review_count: 12, average_rating: 4.6 },
+  ],
+  // ▼▼▼ 追加: Step 5用ダミーデータ ▼▼▼
+  benefits: [
+    { label: "保湿力が高い", count: 85 },
+    { label: "香りが良い", count: 72 },
+    { label: "肌馴染み", count: 68 },
+    { label: "トーンアップ", count: 45 },
+    { label: "低刺激", count: 42 },
+  ],
+  issues: [
+    { label: "ピリピリする", count: 45 },
+    { label: "液だれ", count: 32 },
+    { label: "香りが強い", count: 28 },
+    { label: "高い", count: 15 },
+    { label: "ベタつく", count: 12 },
   ]
 }

@@ -1,52 +1,55 @@
 // review_analysis_front/app/dashboard/page.tsx
 
-// 作成したAPIクライアント関数をインポート
 import { fetchKpiData } from "@/lib/api-client"
 
-// 各種チャートコンポーネントのインポート
 import { KpiSection } from "@/components/dashboard/kpi-section"
-import { DashboardAgeBarChart } from "@/components/dashboard/age-bar-chart"
+import { DashboardAgeBarChart } from "@/components/dashboard/age-bar-chart" // 修正対象
 import { DashboardAgeDistribution } from "@/components/dashboard/age-distribution"
 import { DashboardRatingDistribution } from "@/components/dashboard/rating-distribution"
 import { DashboardSkinDistribution } from "@/components/dashboard/skin-distribution"
-import { DashboardTrendChart } from "@/components/dashboard/trend-chart"
+import { DashboardTrendChart } from "@/components/dashboard/trend-chart" // 修正対象
 import { DashboardRadarChart } from "@/components/dashboard/radar-chart"
 import { DashboardProductTypeChart } from "@/components/dashboard/product-type-chart"
 import { DashboardDonutChart } from "@/components/dashboard/donut-chart"
 import { DashboardBenefitsChart } from "@/components/dashboard/benefits-chart"
 import { DashboardIssuesChart } from "@/components/dashboard/issues-chart"
 
-// ■ 追加: Next.js 15では URLパラメータ(searchParams) は Promise型として受け取ります
 interface DashboardPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-// ■ 変更: 引数に props を追加
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
-
-  // ■ 追加: URLパラメータが解決されるのを待ちます
   const params = await searchParams
 
-  // ■ 追加: APIに渡すためのフィルター条件を作ります
-  // URLに ?manufacturer=XXX とあれば、それを取得します
   const filter = {
     manufacturer_name: typeof params.manufacturer === 'string' ? params.manufacturer : undefined,
     product_name: typeof params.product === 'string' ? params.product : undefined,
+    start_date: typeof params.from === 'string' ? params.from : undefined,
+    end_date: typeof params.to === 'string' ? params.to : undefined,
   }
 
-  // ■ 変更: fetchKpiData は DashboardResponse 型を返すようになりました
   const dashboardData = await fetchKpiData(filter)
   
-  // KPIデータとグラフデータを安全に取り出します
   const kpiData = dashboardData?.kpi
   const distData = dashboardData?.distributions
-  
-  // ▼▼▼ 追加: Step 3で追加したデータを取得 ▼▼▼
   const radarData = dashboardData?.radar || []
   const productTypeData = dashboardData?.product_type || []
   const repurchaseData = dashboardData?.repurchase || []
+  const ageRatingData = dashboardData?.age_rating || []
+  const trendData = dashboardData?.trend || []
 
-  // レイアウト用の高さ設定
+  // ▼▼▼ 追加: 年代別の「件数」と「評価」をマージする処理 ▼▼▼
+  // distData.age (件数) と ageRatingData (評価) を結合します
+  const combinedAgeData = (distData?.age || []).map((ageDistItem) => {
+    // 同じ年代ラベルを持つ評価データを検索
+    const ratingItem = ageRatingData.find(r => r.label === ageDistItem.label)
+    return {
+      label: ageDistItem.label,     // 年代
+      count: ageDistItem.count,     // 件数 (distData由来)
+      rating: ratingItem?.count || 0 // 評価 (ageRatingData由来)
+    }
+  })
+
   const rowHeight = "xl:h-[320px]"
 
   return (
@@ -57,64 +60,47 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
         <div className="xl:col-span-2 h-full min-h-[300px] bg-white rounded-[2rem] p-6 shadow-sm flex flex-col overflow-hidden">
-            {/* 
-                取得したデータを渡します。
-                もしデータ取得失敗(null)の場合は undefined を渡し、
-                KpiSection側で「-」が表示されるようにします。
-            */}
             <KpiSection data={kpiData || undefined} />
         </div>
         <div className="xl:col-span-1 h-full min-h-[300px]">
              <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
-                 <h3 className="font-bold text-sm mb-4">年代別平均評価</h3>
+                 <h3 className="font-bold text-sm mb-4">年代別平均評価と件数</h3>
                  <div className="flex-1 min-h-0 w-full">
-                    {/* ※ここはまだダミーのままです */}
-                    <DashboardAgeBarChart />
+                    {/* ▼ 修正: マージしたデータを渡す */}
+                    <DashboardAgeBarChart data={combinedAgeData} />
                  </div>
                  <div className="flex gap-4 mt-2 text-[10px] font-bold">
-                    <div className="flex items-center gap-1"><div className="w-2 h-2 bg-black rounded-sm"></div>Satisfied</div>
-                    <div className="flex items-center gap-1"><div className="w-2 h-2 bg-black/20 rounded-sm"></div>Unsatisfied</div>
+                    <div className="flex items-center gap-1"><div className="w-2 h-2 bg-black rounded-sm"></div>Avg Rating</div>
+                    {/* 折れ線グラフの説明を追加 */}
+                    <div className="flex items-center gap-1"><div className="w-2 h-1 bg-white rounded-full"></div>Review Count</div>
                  </div>
              </div>
         </div>
       </div>
 
-      {/* 
-         2行目: 3つの円グラフ
-      */}
+      {/* 2行目: 円グラフ (変更なし) */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
-        
-        {/* 年代分布 */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">年代構成比</h3>
             <div className="flex-1 w-full min-h-0">
-                {/* ▼ データを渡す */}
                 <DashboardAgeDistribution data={distData?.age || []} />
             </div>
         </div>
-
-        {/* 評価分布 */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">評価点数分布</h3>
             <div className="flex-1 w-full min-h-0">
-                {/* ▼ データを渡す */}
                 <DashboardRatingDistribution data={distData?.rating || []} />
             </div>
         </div>
-
-        {/* 肌質分布 */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
             <h3 className="font-bold text-sm text-center mb-2">肌質構成比</h3>
             <div className="flex-1 w-full min-h-0">
-                {/* ▼ データを渡す */}
                 <DashboardSkinDistribution data={distData?.skin || []} />
             </div>
         </div>
       </div>
 
-      {/* 
-         3行目: トレンドチャート
-      */}
+      {/* 3行目: トレンドチャート */}
       <div className={`w-full ${rowHeight}`}>
          <div className="bg-white rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
              <div className="flex justify-between items-center mb-2">
@@ -123,58 +109,41 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                  </div>
              </div>
              <div className="flex-1 min-h-0 w-full">
-                <DashboardTrendChart />
+                <DashboardTrendChart data={trendData} />
              </div>
          </div>
       </div>
 
-      {/* 
-         4行目: 3つの分析チャート (Step 3で連動開始)
-      */}
+      {/* 4行目: 分析チャート (変更なし) */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
-        
-        {/* 左: AI分類スコア */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">AI分類スコア</h3>
              <div className="flex-1 w-full min-h-0">
-                 {/* ▼ データを渡す */}
                  <DashboardRadarChart data={radarData} />
              </div>
         </div>
-
-        {/* 中: 商品タイプ */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">商品タイプ構成</h3>
              <div className="flex-1 w-full min-h-0">
-                 {/* ▼ データを渡す */}
                  <DashboardProductTypeChart data={productTypeData} />
              </div>
         </div>
-
-        {/* 右: リピート意欲 */}
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">リピート意欲</h3>
              <div className="flex-1 w-full min-h-0">
-                 {/* ▼ データを渡す */}
                  <DashboardDonutChart data={repurchaseData} />
              </div>
         </div>
       </div>
 
-      {/* 
-         5行目: ベネフィット vs 懸念 (2分割)
-      */}
+      {/* 5行目: ワードランキング (変更なし) */}
       <div className={`grid grid-cols-1 xl:grid-cols-2 gap-8 ${rowHeight}`}>
-        
-        {/* 左: ベネフィットトップ5 */}
         <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm mb-4">ベネフィットの種類のトップ5</h3>
              <div className="flex-1 min-h-0 w-full">
                  <DashboardBenefitsChart />
              </div>
         </div>
-
-        {/* 右: 懸念事項トップ5 */}
         <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm mb-4">懸念事項のトップ5</h3>
              <div className="flex-1 min-h-0 w-full">

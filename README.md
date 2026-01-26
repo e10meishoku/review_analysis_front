@@ -201,6 +201,15 @@ const data = await response.json()
 | **Tailwind CSS** | ユーティリティファーストなスタイリング |
 | **App Router** | ファイルベースのルーティング |
 
+## 機能概要
+- **Dashboard API:** 
+    - KPI（件数、評価、年齢）の算出
+    - 各種属性（肌質、年代、評価）の分布集計
+    - AI分析スコア（レーダーチャート用）の平均算出
+    - 時系列データの抽出
+- **Filter Options API:** DB内のメーカー・商品一覧を動的に取得
+
+
 ## 環境変数
 
 ```bash

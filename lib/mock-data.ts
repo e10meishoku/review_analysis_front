@@ -37,7 +37,7 @@ export const MOCK_DASHBOARD_DATA: DashboardResponse = {
         { label: "60代以上", count: 150 },
     ]
   },
-  // ▼▼▼ 追加: Step 3用のダミーデータ ▼▼▼
+  // Step 3用のダミーデータ
   radar: [
     { label: "効果実感", count: 80 }, 
     { label: "パッケージ", count: 65 },
@@ -55,5 +55,20 @@ export const MOCK_DASHBOARD_DATA: DashboardResponse = {
     { label: "リピートしたい", count: 75 }, 
     { label: "分からない", count: 15 }, 
     { label: "しない", count: 10 }
+  ],
+  // ▼▼▼ 追加: Step 4用のダミーデータ ▼▼▼
+  age_rating: [
+    { label: "20代以下", count: 5.2 },
+    { label: "30代", count: 4.8 },
+    { label: "40代", count: 5.5 },
+    { label: "50代", count: 5.1 },
+    { label: "60代以上", count: 5.8 },
+  ],
+  trend: [
+    { date: "2025-01-01", review_count: 10, average_rating: 4.5 },
+    { date: "2025-01-02", review_count: 15, average_rating: 4.8 },
+    { date: "2025-01-03", review_count: 8, average_rating: 4.2 },
+    { date: "2025-01-04", review_count: 20, average_rating: 5.0 },
+    { date: "2025-01-05", review_count: 12, average_rating: 4.6 },
   ]
 }

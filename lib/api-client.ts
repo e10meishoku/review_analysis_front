@@ -1,7 +1,7 @@
 // review_analysis_front/lib/api-client.ts
 
 import { KpiMetrics } from "@/components/dashboard/kpi-section"
-import { MOCK_DASHBOARD_DATA } from "./mock-data" // MOCK定数名を変更しています(後述)
+import { MOCK_DASHBOARD_DATA } from "./mock-data"
 
 export interface DashboardFilter {
   manufacturer_name?: string
@@ -10,20 +10,23 @@ export interface DashboardFilter {
   end_date?: string
 }
 
-// ▼▼▼ 追加: 選択肢データの型定義 ▼▼▼
 export interface FilterOptions {
   manufacturers: string[]
   products: string[]
 }
 
-// ▼▼▼ 追加: グラフデータの型定義 ▼▼▼
 export interface ChartItem {
   label: string
   count: number
-  fill?: string // 色指定用
+  fill?: string
 }
 
-// ▼▼▼ 追加: ダッシュボード全体のレスポンス型 ▼▼▼
+export interface TrendItem {
+  date: string
+  review_count: number
+  average_rating: number
+}
+
 export interface DashboardResponse {
   kpi: KpiMetrics
   distributions: {
@@ -31,11 +34,21 @@ export interface DashboardResponse {
     rating: ChartItem[]
     age: ChartItem[]
   }
+  radar: ChartItem[]
+  product_type: ChartItem[]
+  repurchase: ChartItem[]
+  age_rating: ChartItem[]
+  trend: TrendItem[]
 }
 
-// ▼▼▼ 追加: 選択肢リストを取得する関数 ▼▼▼
+// ▼▼▼ 追加: 日付フォーマットを YYYY-MM-DD に統一するヘルパー関数 ▼▼▼
+function formatDateStr(dateStr?: string): string | undefined {
+  if (!dateStr) return undefined
+  // スラッシュをハイフンに置換
+  return dateStr.replace(/\//g, "-")
+}
+
 export async function fetchFilterOptions(manufacturer_name?: string): Promise<FilterOptions> {
-  // モックモードなら適当なダミーデータを返す
   if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
     return {
       manufacturers: ["明色化粧品", "競合A社", "競合B社"],
@@ -66,14 +79,12 @@ export async function fetchFilterOptions(manufacturer_name?: string): Promise<Fi
   }
 }
 
-// ▼ 変更: 戻り値を DashboardResponse に変更
 export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardResponse | null> {
     
-    // モックモード
     if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
         console.log("🛠️ Mock Mode: Returning dummy data (Filter ignored in mock)", filter)
         await new Promise((resolve) => setTimeout(resolve, 500))
-        return MOCK_DASHBOARD_DATA // 型エラー防止のため、mock-data.ts も後で更新してください
+        return MOCK_DASHBOARD_DATA
     }
 
     try {
@@ -90,6 +101,17 @@ export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardR
         if (filter?.product_name) {
             params.append("product_name", filter.product_name)
         }
+        
+        // ▼ 修正: 日付フォーマットを変換してからパラメータにセット
+        const formattedStart = formatDateStr(filter?.start_date)
+        const formattedEnd = formatDateStr(filter?.end_date)
+        
+        if (formattedStart) {
+            params.append("start_date", formattedStart)
+        }
+        if (formattedEnd) {
+            params.append("end_date", formattedEnd)
+        }
 
         const queryString = params.toString()
         const endpoint = `${apiUrl}/api/dashboard/kpi${queryString ? `?${queryString}` : ""}`
@@ -100,6 +122,9 @@ export async function fetchKpiData(filter?: DashboardFilter): Promise<DashboardR
 
         if (!res.ok) {
             console.error(`API Error: ${res.status} ${res.statusText}`)
+            // エラー時でもnullを返すと画面が壊れる場合があるので、ログを出してnullを返す
+            const errorText = await res.text()
+            console.error("Error details:", errorText)
             return null
         }
         return res.json()

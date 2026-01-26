@@ -31,6 +31,10 @@ export interface DashboardResponse {
     rating: ChartItem[]
     age: ChartItem[]
   }
+  // ▼▼▼ 追加: Step 3で追加するフィールド ▼▼▼
+  radar: ChartItem[]
+  product_type: ChartItem[]
+  repurchase: ChartItem[]
 }
 
 // ▼▼▼ 追加: 選択肢リストを取得する関数 ▼▼▼

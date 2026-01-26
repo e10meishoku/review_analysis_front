@@ -196,7 +196,7 @@ const data = await response.json()
 
 | 技術 | 用途 |
 |-----|------|
-| **Next.js 15** | React フレームワーク |
+| **Next.js 16** | 最新のReact フレームワーク |
 | **TypeScript** | 型安全な開発 |
 | **Tailwind CSS** | ユーティリティファーストなスタイリング |
 | **App Router** | ファイルベースのルーティング |

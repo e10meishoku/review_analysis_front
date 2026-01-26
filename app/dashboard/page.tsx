@@ -40,6 +40,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // KPIデータとグラフデータを安全に取り出します
   const kpiData = dashboardData?.kpi
   const distData = dashboardData?.distributions
+  
+  // ▼▼▼ 追加: Step 3で追加したデータを取得 ▼▼▼
+  const radarData = dashboardData?.radar || []
+  const productTypeData = dashboardData?.product_type || []
+  const repurchaseData = dashboardData?.repurchase || []
 
   // レイアウト用の高さ設定
   const rowHeight = "xl:h-[320px]"
@@ -63,7 +68,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
              <div className="bg-primary rounded-[2rem] p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
                  <h3 className="font-bold text-sm mb-4">年代別平均評価</h3>
                  <div className="flex-1 min-h-0 w-full">
-                    {/* ※ここはまだダミーのままです（次のステップで対応） */}
+                    {/* ※ここはまだダミーのままです */}
                     <DashboardAgeBarChart />
                  </div>
                  <div className="flex gap-4 mt-2 text-[10px] font-bold">
@@ -124,7 +129,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </div>
 
       {/* 
-         4行目: 3つの分析チャート
+         4行目: 3つの分析チャート (Step 3で連動開始)
       */}
       <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${rowHeight}`}>
         
@@ -132,7 +137,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">AI分類スコア</h3>
              <div className="flex-1 w-full min-h-0">
-                 <DashboardRadarChart />
+                 {/* ▼ データを渡す */}
+                 <DashboardRadarChart data={radarData} />
              </div>
         </div>
 
@@ -140,7 +146,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">商品タイプ構成</h3>
              <div className="flex-1 w-full min-h-0">
-                 <DashboardProductTypeChart />
+                 {/* ▼ データを渡す */}
+                 <DashboardProductTypeChart data={productTypeData} />
              </div>
         </div>
 
@@ -148,7 +155,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="bg-white rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
              <h3 className="font-bold text-sm text-center mb-4">リピート意欲</h3>
              <div className="flex-1 w-full min-h-0">
-                 <DashboardDonutChart />
+                 {/* ▼ データを渡す */}
+                 <DashboardDonutChart data={repurchaseData} />
              </div>
         </div>
       </div>

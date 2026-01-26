@@ -36,5 +36,24 @@ export const MOCK_DASHBOARD_DATA: DashboardResponse = {
         { label: "50代", count: 350 },
         { label: "60代以上", count: 150 },
     ]
-  }
+  },
+  // ▼▼▼ 追加: Step 3用のダミーデータ ▼▼▼
+  radar: [
+    { label: "効果実感", count: 80 }, 
+    { label: "パッケージ", count: 65 },
+    { label: "使用感", count: 70 }, 
+    { label: "再購入", count: 85 },
+    { label: "香り", count: 60 }, 
+    { label: "コスパ", count: 50 },
+  ],
+  product_type: [
+    { label: "購入品", count: 65 }, 
+    { label: "リピート", count: 25 }, 
+    { label: "モニター", count: 10 }
+  ],
+  repurchase: [
+    { label: "リピートしたい", count: 75 }, 
+    { label: "分からない", count: 15 }, 
+    { label: "しない", count: 10 }
+  ]
 }

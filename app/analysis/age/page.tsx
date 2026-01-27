@@ -1,12 +1,12 @@
-// app/dashboard/analysis/age/page.tsx (イメージコードなので後で大幅修正予定)
+// app/dashboard/analysis/age/page.tsx
 import { DashboardRadarChart } from "@/components/dashboard/radar-chart"
-// 他のチャートコンポーネントもインポート...
+// 他のチャートコンポーネントも必要に応じてインポートしてください
 
 export default function AgeAnalysisPage() {
   const segments = ["20代以下", "30代", "40代", "50代以上"]
 
   return (
-    <div className="flex flex-col gap-8 pb-8">
+    <div className="flex flex-col gap-8 pb-8 px-6 pt-6">
       
       {/* ページヘッダー */}
       <div>
@@ -34,8 +34,13 @@ export default function AgeAnalysisPage() {
           {segments.map((seg, i) => (
             <div key={`radar-${i}`} className="bg-white p-4 h-[250px] border-x border-b border-gray-100 first:rounded-bl-none last:rounded-br-none">
               <p className="text-xs text-center text-gray-400 mb-2 font-bold">AI評価スコア</p>
-              {/* ここにデータをpropsで渡したRadarChartを配置 */}
-              <DashboardRadarChart /> 
+              
+              {/* 
+                 ▼ 修正ポイント: 
+                 data={[]} を明示的に渡して型エラーを回避。
+                 コンポーネント側で「No Data」表示になります。
+              */}
+              <DashboardRadarChart data={[]} /> 
             </div>
           ))}
 

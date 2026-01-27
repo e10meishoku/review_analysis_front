@@ -1,6 +1,8 @@
 // components/app-header.tsx
 "use client"
 
+// ▼▼▼ 解説: Suspense をReactからインポートします ▼▼▼
+import { Suspense } from "react"
 import { Bell, Menu, SlidersHorizontal } from "lucide-react" // フィルターアイコン追加
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -33,7 +35,14 @@ export function AppHeader() {
 
           {/* B. デスクトップ用: フィルター (横並び) */}
           <div className="hidden md:block w-full">
-             <HeaderFilters className="flex-row items-center" />
+             {/* 
+                ▼▼▼ 解説: Suspenseでラップします ▼▼▼
+                fallback={...} の中身は、URLパラメータを読み込んでいる一瞬の間に表示される
+                「仮の姿（スケルトン）」です。ここではグレーの棒を表示させています。
+             */}
+             <Suspense fallback={<div className="h-9 w-full bg-gray-200/50 rounded-full animate-pulse" />}>
+                <HeaderFilters className="flex-row items-center" />
+             </Suspense>
           </div>
 
           {/* C. モバイル用: フィルターボタン (アイコンのみ表示) */}
@@ -48,8 +57,11 @@ export function AppHeader() {
                 <SheetContent side="top" className="h-auto pb-8 rounded-b-[1.5rem]">
                    <SheetTitle className="mb-4 text-center font-bold">分析条件の変更</SheetTitle>
                    <SheetDescription className="sr-only">分析対象のブランド、商品、期間を設定します</SheetDescription>
-                   {/* ここでフィルターを縦並び(flex-col)で表示 */}
-                   <HeaderFilters className="flex-col" />
+                   
+                   {/* ▼▼▼ 解説: ここも HeaderFilters を使っているので Suspense で囲みます ▼▼▼ */}
+                   <Suspense fallback={<div className="h-40 w-full bg-gray-200/50 rounded-xl animate-pulse" />}>
+                      <HeaderFilters className="flex-col" />
+                   </Suspense>
                    
                    <div className="mt-6">
                       <Button className="w-full rounded-full font-bold">適用する</Button>

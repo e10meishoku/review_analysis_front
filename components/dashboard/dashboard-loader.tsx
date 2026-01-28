@@ -1,3 +1,4 @@
+// components/dashboard/dashboard-loader.tsx
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { Skeleton } from "@/components/ui/skeleton"

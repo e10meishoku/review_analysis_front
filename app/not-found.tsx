@@ -1,3 +1,4 @@
+// app/not-found.tsx
 import { StatusScreen } from "@/components/status-screen"
 import { FileQuestion } from "lucide-react"
 

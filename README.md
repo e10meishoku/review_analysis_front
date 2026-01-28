@@ -1,10 +1,10 @@
 # Review Analysis Frontend
 
-レビュー分析ダッシュボードのフロントエンド。**Next.js 15** + **TypeScript** + **Tailwind CSS** を使用したモダンなUI。
+レビュー分析ダッシュボードのフロントエンド。**Next.js 16** + **TypeScript** + **Tailwind CSS** を使用したモダンなUI。
 
 ## プロジェクト概要
 
-- **フレームワーク**: Next.js 15（最新のApp Router対応）
+- **フレームワーク**: Next.js 16（最新のApp Router対応）
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS
 - **パッケージ管理**: npm / yarn / pnpm / bun

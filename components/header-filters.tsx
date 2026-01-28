@@ -1,8 +1,9 @@
-// components/header-filters.tsx
 "use client"
 
 import * as React from "react"
+// useTransition を追加
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTransition } from "react" 
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
@@ -24,9 +25,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-// Selectはメーカー用には使わなくなるため、インポートは残しておきますが不使用でもOK
-
-// ■ 追加: APIクライアント関数をインポート
+// ■ 追加: Spinnerコンポーネントをインポート
+import { Spinner } from "@/components/ui/spinner"
 import { fetchFilterOptions } from "@/lib/api-client"
 
 interface HeaderFiltersProps {
@@ -36,6 +36,10 @@ interface HeaderFiltersProps {
 export function HeaderFilters({ className }: HeaderFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  // ■ 追加: トランジション（保留状態）の管理
+  // isPending は、データ取得（URL変更）の待機中に true になります
+  const [isPending, startTransition] = useTransition()
 
   const initialManufacturer = searchParams.get("manufacturer") || "all"
   const initialProduct = searchParams.get("product") || ""
@@ -45,29 +49,25 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
     to: new Date(2025, 4, 14),
   })
 
-  // ■ 修正: メーカー選択用のOpen状態を追加
   const [openManufacturer, setOpenManufacturer] = React.useState(false)
   const [openProduct, setOpenProduct] = React.useState(false)
   
   const [productValue, setProductValue] = React.useState(initialProduct)
   const [manufacturerValue, setManufacturerValue] = React.useState(initialManufacturer)
 
-  // ■ 追加: DBから取得したリストを管理するState
   const [manufacturerList, setManufacturerList] = React.useState<string[]>([])
   const [productList, setProductList] = React.useState<string[]>([])
 
-  // ■ 追加: 画面表示時 & メーカー変更時にリストを取得する
   React.useEffect(() => {
     const loadOptions = async () => {
-      // APIからデータを取得
       const options = await fetchFilterOptions(manufacturerValue)
       setManufacturerList(options.manufacturers)
       setProductList(options.products)
     }
     loadOptions()
-  }, [manufacturerValue]) // manufacturerValueが変わるたびに再実行
+  }, [manufacturerValue])
 
-  // 共通のURL更新関数
+  // ■ 修正: URL更新を startTransition でラップする
   const updateFilter = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (value && value !== "all" && value !== "") {
@@ -75,36 +75,33 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
     } else {
       params.delete(key)
     }
-    router.push(`?${params.toString()}`, { scroll: false })
+    
+    // ここでラップすることで、更新完了まで isPending が true になる
+    startTransition(() => {
+      router.push(`?${params.toString()}`, { scroll: false })
+    })
   }
 
-  // ■ 修正: メーカー変更ハンドラ (Commandコンポーネント用)
   const handleManufacturerChange = (value: string) => {
     const newValue = value === manufacturerValue ? "all" : value
     setManufacturerValue(newValue)
     setOpenManufacturer(false)
-    
-    // メーカーを変えたら商品はリセットする
     setProductValue("")
     updateFilter("product", null)
-    
     updateFilter("manufacturer", newValue)
   }
 
-  // ■ 修正: 商品変更ハンドラ (URL更新を追加)
   const handleProductChange = (val: string) => {
-    // 「全商品」が選ばれたか、同じ値をクリックしたら選択解除（空文字へ）
     const newValue = (val === "all-products" || val === productValue) ? "" : val
     setProductValue(newValue)
     setOpenProduct(false)
-    
     updateFilter("product", newValue)
   }
 
   return (
     <div className={cn("flex gap-3 w-full", className)}>
       
-      {/* 1. メーカー選択 (修正: SelectからPopover+Commandに変更) */}
+      {/* 1. メーカー選択 */}
       <div className="flex-1 min-w-0">
         <Popover open={openManufacturer} onOpenChange={setOpenManufacturer}>
           <PopoverTrigger asChild>
@@ -112,12 +109,22 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
               variant="outline"
               role="combobox"
               aria-expanded={openManufacturer}
+              // ■ 追加: 通信中はボタンを無効化
+              disabled={isPending}
               className="w-full h-9 justify-between rounded-full bg-white border-gray-200 text-xs font-medium shadow-sm px-3"
             >
-              <span className="truncate">
-                {manufacturerValue !== "all" ? manufacturerValue : "全メーカー"}
+              <span className="truncate flex items-center gap-2">
+                {/* ■ 追加: 通信中ならスピナーを表示、そうでなければ値 */}
+                {isPending ? (
+                  <>
+                    <Spinner className="h-3 w-3" />
+                    <span className="opacity-70">更新中...</span>
+                  </>
+                ) : (
+                  manufacturerValue !== "all" ? manufacturerValue : "全メーカー"
+                )}
               </span>
-              <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+              {!isPending && <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[240px] p-0 bg-white" align="start">
@@ -170,12 +177,22 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
               variant="outline"
               role="combobox"
               aria-expanded={openProduct}
+              // ■ 追加: 通信中は無効化
+              disabled={isPending} 
               className="w-full h-9 justify-between rounded-full bg-white border-gray-200 text-xs font-medium shadow-sm px-3"
             >
-              <span className="truncate">
-                {productValue ? productValue : "全商品"}
+              <span className="truncate flex items-center gap-2">
+                {/* ■ 追加: 通信中ならスピナー */}
+                {isPending ? (
+                  <>
+                    <Spinner className="h-3 w-3" />
+                    <span className="opacity-70">更新中...</span>
+                  </>
+                ) : (
+                   productValue ? productValue : "全商品"
+                )}
               </span>
-              <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+              {!isPending && <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[240px] p-0 bg-white" align="start">
@@ -184,7 +201,6 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
               <CommandList className="max-h-[300px] overflow-y-auto">
                 <CommandEmpty>商品が見つかりません</CommandEmpty>
                 <CommandGroup>
-                  {/* ■ 追加: 全商品のリセット項目 */}
                   <CommandItem
                     value="all-products"
                     onSelect={() => handleProductChange("all-products")}
@@ -199,7 +215,6 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
                     全商品 (リセット)
                   </CommandItem>
 
-                  {/* ■ 修正: DBから取得したリストを表示 */}
                   {productList.map((prod) => (
                     <CommandItem
                       key={prod}
@@ -223,19 +238,25 @@ export function HeaderFilters({ className }: HeaderFiltersProps) {
         </Popover>
       </div>
 
-      {/* 3. 期間選択 (既存のまま) */}
+      {/* 3. 期間選択 */}
       <div className="flex-1 min-w-0">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               id="date"
               variant={"outline"}
+              // ■ 追加: 期間は今のロジックだとrouter.pushしていませんが、統一感を出すためにisPendingで見栄えを制御
+              disabled={isPending}
               className={cn(
                 "w-full h-9 justify-start text-left font-normal rounded-full bg-white border-gray-200 text-xs shadow-sm px-3",
                 !date && "text-muted-foreground"
               )}
             >
-              <CalendarIcon className="mr-2 h-3 w-3 shrink-0" />
+              {isPending ? (
+                 <Spinner className="mr-2 h-3 w-3" />
+              ) : (
+                 <CalendarIcon className="mr-2 h-3 w-3 shrink-0" />
+              )}
               <span className="truncate">
                 {date?.from ? (
                   date.to ? (

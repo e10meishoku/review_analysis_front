@@ -78,22 +78,22 @@ npm run format
 review_analysis_front/
 ├── app/                            # Next.js App Router
 │   ├── layout.tsx                  # ルートレイアウト
-│   ├── page.tsx                    # ホームページ
+│   ├── page.tsx                    # ホームページ (リダイレクト)
+│   ├── not-found.tsx               # 404ページ
 │   ├── globals.css                 # グローバルスタイル
 │   ├── favicon.ico                 # ファビコン
-│   ├── analysis/                   # 分析ページ
-│   │   └── age/                    # 年齢分析ページ
-│   │       └── page.tsx
-│   ├── dashboard/                  # ダッシュボード
-│   │   ├── layout.tsx              # ダッシュボードレイアウト
-│   │   └── page.tsx                # ダッシュボードページ
-│   └── design-system/              # デザインシステムページ
-│       └── page.tsx
+│   └── dashboard/                  # ダッシュボード
+│       ├── layout.tsx              # ダッシュボードレイアウト
+│       ├── loading.tsx             # ローディング画面 (Skeleton)
+│       └── page.tsx                # ダッシュボードメイン
 ├── components/                     # React コンポーネント
 │   ├── app-header.tsx              # アプリヘッダー
 │   ├── app-sidebar.tsx             # アプリサイドバー
 │   ├── header-filters.tsx          # ヘッダーフィルター
+│   ├── feature-coming-soon-dialog.tsx # 未実装機能のお知らせモーダル
+│   ├── status-screen.tsx           # エラー/404表示用
 │   ├── dashboard/                  # ダッシュボード関連コンポーネント
+│   │   ├── dashboard-loader.tsx    # ローディングUI本体
 │   │   ├── age-bar-chart.tsx
 │   │   ├── age-distribution.tsx
 │   │   ├── benefits-chart.tsx
@@ -113,18 +113,21 @@ review_analysis_front/
 │       ├── card.tsx
 │       ├── chart.tsx
 │       ├── command.tsx
-│       ├── dialog.tsx
+│       ├── dialog.tsx              # Modal
 │       ├── input.tsx
 │       ├── popover.tsx
 │       ├── select.tsx
 │       ├── separator.tsx
 │       ├── sheet.tsx
 │       ├── sidebar.tsx
-│       ├── skeleton.tsx
+│       ├── skeleton.tsx            # Loading Skeleton
+│       ├── spinner.tsx             # Loading Spinner
 │       └── tooltip.tsx
 ├── hooks/                          # React カスタムフック
 │   └── use-mobile.tsx              # モバイル判定フック
 ├── lib/                            # ユーティリティ関数
+│   ├── api-client.ts               # API通信クライアント
+│   ├── mock-data.ts                # モックデータ
 │   └── utils.ts                    # クラス名・型ユーティリティ
 ├── public/                         # 静的ファイル
 ├── components.json                 # UI フレームワーク設定
@@ -134,7 +137,7 @@ review_analysis_front/
 ├── package.json                    # 依存関係
 ├── .env.example                    # 環境変数テンプレート
 ├── .gitignore
-└── README.md                       # このファイル
+
 ```
 
 ## 開発ワークフロー
@@ -200,6 +203,8 @@ const data = await response.json()
 | **TypeScript** | 型安全な開発 |
 | **Tailwind CSS** | ユーティリティファーストなスタイリング |
 | **App Router** | ファイルベースのルーティング |
+| **Shadcn/ui** | UIコンポーネント (Skeleton, Dialog, Spinner等) |
+| **Recharts** | チャートライブラリ |
 
 ## 機能概要
 - **Dashboard API:** 

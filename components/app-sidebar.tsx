@@ -1,20 +1,24 @@
 // components/app-sidebar.tsx
 "use client"
 
-import React, { useState } from "react" // useStateを追加
+import React, { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation" // ■ 修正: useRouter を追加
 import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
   Users,
-  Sparkles,      // 肌質などのイメージ
-  ScanFace,      // 年代イメージ
-  HeartHandshake,// 悩み・エンゲージメント
+  Sparkles,
+  ScanFace,
+  HeartHandshake,
   MessageSquare,
-  Swords,        // 競合比較
+  Swords,
   Settings,
+  LogOut, // ■ 追加: ログアウトアイコン
 } from "lucide-react"
+
+// ■ 追加: Supabaseクライアント
+import { createClient } from "@/lib/supabase/client"
 
 // ■ 追加: 作成したモーダルをインポート
 import { FeatureComingSoonDialog } from "@/components/feature-coming-soon-dialog"
@@ -28,7 +32,7 @@ const SIDEBAR_SECTIONS = [
     ]
   },
   {
-    title: "Deep Dive Analysis", // 分析の切り口
+    title: "Deep Dive Analysis",
     items: [
       { icon: ScanFace, label: "年代別分析 (Age)", href: "/dashboard/analysis/age" },
       { icon: Sparkles, label: "肌質別分析 (Skin)", href: "/dashboard/analysis/skin" },
@@ -52,6 +56,8 @@ const SIDEBAR_SECTIONS = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()     // ■ 追加: 画面遷移用
+  const supabase = createClient() // ■ 追加: ログアウト処理用
 
   // ■ 追加: モーダルの状態管理
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -63,7 +69,16 @@ export function AppSidebar() {
     setIsModalOpen(true)
   }
 
-  // ■ 追加: 現在実装済みのパスリスト (これに含まれない場合はモーダルを出す)
+  // ■ 追加: ログアウト処理
+  const handleSignOut = async () => {
+    // Supabaseからログアウト
+    await supabase.auth.signOut()
+    // ログイン画面へ戻す
+    router.push("/login")
+    router.refresh()
+  }
+
+  // ■ 追加: 現在実装済みのパスリスト
   const IMPLEMENTED_PATHS = ["/dashboard"]
 
   return (
@@ -81,7 +96,7 @@ export function AppSidebar() {
         <div className="flex-1 px-4 py-2 space-y-6 overflow-y-auto">
           {SIDEBAR_SECTIONS.map((section, idx) => (
             <div key={idx}>
-              {/* セクションタイトル（あえて小さく控えめに） */}
+              {/* セクションタイトル */}
               {section.title && (
                 <h4 className="px-4 mb-2 text-[10px] uppercase tracking-wider text-gray-500 font-bold">
                   {section.title}
@@ -95,7 +110,7 @@ export function AppSidebar() {
                     ? pathname === item.href 
                     : pathname.startsWith(item.href)
                   
-                  // ■ 追加: 実装済みかどうか判定
+                  // 実装済みかどうか判定
                   const isImplemented = IMPLEMENTED_PATHS.includes(item.href)
 
                   // 共通のスタイルクラス
@@ -106,7 +121,6 @@ export function AppSidebar() {
                       : "text-gray-400 hover:bg-white/10 hover:text-white"
                   )
 
-                  // ■ 分岐: 実装済みならLink, 未実装ならbutton
                   if (isImplemented) {
                     return (
                       <Link
@@ -128,7 +142,6 @@ export function AppSidebar() {
                       >
                         <item.icon className={cn("h-4 w-4", "stroke-[2px]")} />
                         <span className="text-sm">{item.label}</span>
-                        {/* 任意: 小さなバッジなどをつけても良いですが、シンプルさを優先して今回はなし */}
                       </button>
                     )
                   }
@@ -139,17 +152,28 @@ export function AppSidebar() {
         </div>
 
         {/* フッターエリア */}
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-4">
+          
+          {/* データ更新情報などのカード */}
           <div className="bg-[#1E1E1E] rounded-xl p-4 text-center border border-white/5">
               <p className="text-[10px] text-gray-400 mb-2">Data updated: 2026/01/16</p>
               <button className="text-xs bg-white text-black px-3 py-2 rounded-lg font-bold w-full hover:bg-gray-200 transition">
                   Export Report
               </button>
           </div>
+
+          {/* ■ 追加: ログアウトボタン */}
+          <button
+            onClick={handleSignOut}
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors text-xs font-bold"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>ログアウト</span>
+          </button>
         </div>
       </div>
 
-      {/* ■ 追加: モーダルコンポーネントを配置 */}
+      {/* モーダルコンポーネント */}
       <FeatureComingSoonDialog 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
